@@ -1,0 +1,124 @@
+.tableRow button {
+  margin-right: 0.5rem;
+  min-width: 100px;
+  max-width: 100px;
+  min-height: 40px;
+  max-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tableContainer {
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableContainer th, .tableContainer td {
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.tableContainer th {
+  background-color: #000000;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.tableContainer td {
+  border-bottom: 1px solid #ddd;
+}
+
+.tableRow:hover {
+  background-color: #f1f1f1;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pagination li {
+  list-style-type: none;
+  margin: 0 0.5rem;
+}
+
+.pagination li a {
+  text-decoration: none;
+  color: #ff0000;
+}
+
+.pagination .active a {
+  font-weight: bold;
+  color: #000;
+}
+
+.modalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+.modalHeader h6 {
+  margin: 0;
+}
+
+.modalContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.modalContent p {
+  margin: 4px 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #ece3e3;
+}
+
+@media (max-width: 768px) {
+  .modalBox {
+    width: 90%;
+  }
+
+  .modalContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-content {
+  margin-top: 200px; /* Ajusta esto según la altura del menú */
+}
+
+.main-content.scrolled {
+  margin-top: 150px; /* Ajusta esto según la altura reducida del menú */
+}

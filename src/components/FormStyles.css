@@ -1,0 +1,192 @@
+.modalBox-agregar-cliente {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 0px;
+  border-radius: 8px;
+}
+
+.modalHeader-agregar-cliente {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #000000;
+  color: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modalHeader-agregar-cliente h6 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.form-grid-agregar-cliente {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+}
+
+.form-row-agregar-cliente {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row-agregar-cliente > * {
+  flex: 1;
+}
+
+.form-actions-agregar-cliente {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.closeButton-agregar-cliente {
+  background: #ffeded;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #ff0000;
+}
+
+.form-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-title svg {
+  color: red;
+}
+
+.form-button {
+  background-color: #fffbfb;
+  color: #fff;
+}
+
+.form-button:hover {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .modalBox-agregar-cliente {
+    width: 90%;
+  }
+
+  .form-row-agregar-cliente {
+    flex-direction: column;
+  }
+
+  .form-actions-agregar-cliente {
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+.modalBox-editar-cliente {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.modalHeader-editar-cliente {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #000;
+  color: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modalHeader-editar-cliente h6 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.form-grid-editar-cliente {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+}
+
+.form-row-editar-cliente {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row-editar-cliente > * {
+  flex: 1;
+}
+
+.form-actions-editar-cliente {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.closeButton-editar-cliente {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+.form-title-editar-cliente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-title-editar-cliente svg {
+  color: red;
+}
+
+.form-button-editar-cliente {
+  background-color: #ffffff;
+  color: #fff;
+}
+
+.form-button-editar-cliente:hover {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .modalBox-editar-cliente {
+    width: 90%;
+  }
+
+  .form-row-editar-cliente {
+    flex-direction: column;
+  }
+
+  .form-actions-editar-cliente {
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+}

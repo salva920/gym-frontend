@@ -1,0 +1,50 @@
+.dashboard {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.card-container-dashboard {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px; /* Agregar espacio entre las tarjetas */
+  flex-wrap: wrap; /* Asegura que las tarjetas se envuelvan en pantallas más pequeñas */
+}
+
+.card-dashboard {
+  background: linear-gradient(130deg, #ff0000 0%, #000000 100%); /* Gradiente de rojo a negro */
+  border-radius: 12px; /* Bordes más redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+  padding: 20px;
+  text-align: center;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease-in-out; /* Transición para el efecto de hover */
+}
+
+.card-dashboard:hover {
+  transform: scale(1.05); /* Efecto de agrandamiento al pasar el cursor */
+}
+
+.card-dashboard h6 {
+  font-size: 20px; /* Tamaño de fuente más grande */
+  margin-bottom: 10px;
+  color: #fff; /* Texto en blanco */
+}
+
+.card-dashboard h4 {
+  font-size: 28px; /* Tamaño de fuente más grande */
+  font-weight: bold;
+  margin: 0;
+  color: #fff; /* Texto en blanco */
+}
+
+@media (max-width: 768px) {
+  .card-dashboard {
+    width: 100%; /* Las tarjetas ocuparán el ancho completo en pantallas pequeñas */
+  }
+}

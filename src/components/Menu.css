@@ -1,0 +1,73 @@
+.menu {
+  width: 100%;
+  background: linear-gradient(90deg, #ff0000, #000000);
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  transition: padding 0.3s, background 0.3s;
+}
+
+.menu.scrolled {
+  padding: 10px 0;
+  background: linear-gradient(90deg, #ff0000, #333333);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.logo img {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  transition: width 0.3s, height 0.3s;
+}
+
+.menu.scrolled .logo img {
+  width: 100px;
+  height: 100px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  width: 40%;
+}
+
+.searchIcon {
+  padding: 10px;
+  color: #e32424;
+}
+
+.searchInput {
+  padding: 10px;
+  width: 100%;
+}
+
+.logout {
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search {
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  .logout {
+    align-self: flex-end;
+  }
+}

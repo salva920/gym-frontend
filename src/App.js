@@ -72,7 +72,7 @@ function App() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/clientes', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/clientes`, {
         headers: { Authorization: token }
       });
       setClientes(res.data);
@@ -88,7 +88,7 @@ function App() {
   const verificarEstadoClientes = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/clientes', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/clientes`, {
         headers: { Authorization: token }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
@@ -121,7 +121,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post('http://localhost:5000/clientes', clienteAEnviar, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/clientes`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -160,7 +160,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`http://localhost:5000/clientes/${cliente.id}`, clienteAEnviar, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -176,7 +176,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/clientes/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/clientes/${id}`, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -197,7 +197,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
         estado_pago: 'Pagado',
       };
-      await axios.put(`http://localhost:5000/clientes/${id}`, clienteAEnviar, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/clientes/${id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();

@@ -3,6 +3,8 @@ import { Box, Button, TextField, Typography, Card, CardContent } from '@mui/mate
 import axios from 'axios';
 import './Login.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Login = ({ setAuth }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
@@ -15,7 +17,7 @@ const Login = ({ setAuth }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/login', credentials);
+      const res = await axios.post(`${API_URL}/login`, credentials);
       if (res.data.auth) {
         setAuth(true);
         localStorage.setItem('token', res.data.token);

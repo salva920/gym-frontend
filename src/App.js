@@ -13,6 +13,8 @@ import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
 import './App.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function App() {
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
@@ -72,7 +74,7 @@ function App() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/clientes`, {
+      const res = await axios.get(`${API_URL}/clientes`, {
         headers: { Authorization: token }
       });
       setClientes(res.data);
@@ -88,7 +90,7 @@ function App() {
   const verificarEstadoClientes = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/clientes`, {
+      const res = await axios.get(`${API_URL}/clientes`, {
         headers: { Authorization: token }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
@@ -121,7 +123,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${process.env.REACT_APP_API_URL}/clientes`, clienteAEnviar, {
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -160,7 +162,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${process.env.REACT_APP_API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -176,7 +178,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/clientes/${id}`, {
+      await axios.delete(`${API_URL}/clientes/${id}`, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -197,7 +199,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
         estado_pago: 'Pagado',
       };
-      await axios.put(`${process.env.REACT_APP_API_URL}/clientes/${id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/${id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();

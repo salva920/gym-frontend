@@ -19,8 +19,8 @@ const Login = ({ setAuth }) => {
     try {
       const res = await axios.post(`${API_URL}/login`, credentials);
       if (res.data.auth) {
-        setAuth(true);
-        localStorage.setItem('token', res.data.token);
+        setAuth(res.data.token);
+        localStorage.setItem('authToken', res.data.token);
       } else {
         setError('Invalid credentials');
       }

@@ -6,9 +6,9 @@ const { Pool } = require('pg'); // O el cliente de la base de datos que estés u
 const pool = new Pool({
   user: 'root',
   host: 'localhost',
-  database: 'gym',
-  password: 'salva',
-  port: 5000,
+  database: 'railway',
+  password: 'ghJeQcVgVySohymnEwfoFvqTqCgUEknx',
+  port: 13307,
 });
 
 // Función para actualizar el estado de pago de los clientes

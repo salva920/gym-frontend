@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "gym-frontend/package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "build" }
+      },
+      {
+        "src": "gym-backend/server.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/gym-backend/server.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/gym-frontend/build/$1"
+      }
+    ]
+  }
+  

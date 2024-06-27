@@ -13,7 +13,6 @@ import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://gym-backend-production.up.railway.app';
 
 function App() {
   const [clientes, setClientes] = useState([]);
@@ -123,7 +122,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
+      await axios.post(`api/clientes`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -162,7 +161,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/api/clientes/${cliente.id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -178,7 +177,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`, {
+      await axios.delete(`${API_URL}/api/clientes/${id}`, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -199,7 +198,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
         estado_pago: 'Pagado',
       };
-      await axios.put(`${API_URL}/clientes/${id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/api/clientes/${id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();

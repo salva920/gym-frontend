@@ -1,22 +1,42 @@
 const cron = require('node-cron');
-const axios = require('axios');
-const { Pool } = require('pg'); // O el cliente de la base de datos que estés utilizando
+const mongoose = require('mongoose');
 
-// Configurar la conexión a la base de datos
-const pool = new Pool({
-  user: 'root',
-  host: 'localhost',
-  database: 'railway',
-  password: 'ghJeQcVgVySohymnEwfoFvqTqCgUEknx',
-  port: 13307,
+// Configuración de la conexión a la base de datos
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Conectado a MongoDB Atlas');
+}).catch((err) => {
+  console.error('Error conectando a MongoDB Atlas:', err);
 });
+
+// Definir el esquema y modelo del cliente
+const clienteSchema = new mongoose.Schema({
+  nombre: String,
+  cedula: String,
+  telefono: String,
+  correo: String,
+  direccion: String,
+  fecha_nacimiento: Date,
+  sexo: String,
+  peso: String,
+  horario: String,
+  historial_medico: String,
+  tipo_entrenamiento: String,
+  fecha_inicio: Date,
+  tipo_membresia: String,
+  estado_pago: String,
+  fechaRegistro: Date,
+  notas: String
+});
+
+const Cliente = mongoose.model('Cliente', clienteSchema);
 
 // Función para actualizar el estado de pago de los clientes
 const actualizarEstadoClientes = async () => {
   try {
-    const res = await pool.query('SELECT id, fechaRegistro, estado_pago FROM clientes');
-    const clientes = res.rows;
-
+    const clientes = await Cliente.find({});
     const hoy = new Date();
 
     for (const cliente of clientes) {
@@ -24,7 +44,8 @@ const actualizarEstadoClientes = async () => {
       const diferenciaMeses = (hoy.getFullYear() - fechaRegistro.getFullYear()) * 12 + (hoy.getMonth() - fechaRegistro.getMonth());
 
       if (diferenciaMeses >= 1 && cliente.estado_pago === 'Pagado') {
-        await pool.query('UPDATE clientes SET estado_pago = $1 WHERE id = $2', ['Pendiente', cliente.id]);
+        cliente.estado_pago = 'Pendiente';
+        await cliente.save();
       }
     }
     console.log('Estados de pago actualizados');

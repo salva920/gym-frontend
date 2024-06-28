@@ -1,10 +1,5 @@
 {
-  "version": 2,
   "builds": [
-    {
-      "src": "gym-backend/server.js",
-      "use": "@vercel/node"
-    },
     {
       "src": "package.json",
       "use": "@vercel/static-build",
@@ -15,12 +10,8 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/gym-backend/server.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/"
     }
   ]
 }

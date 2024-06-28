@@ -16,7 +16,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "gym-backend/server.js"
+      "dest": "/gym-backend/server.js"
     },
     {
       "src": "/(.*)",

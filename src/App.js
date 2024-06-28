@@ -13,7 +13,7 @@ import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+const API_URL = '/api';
 
 function App() {
   const [clientes, setClientes] = useState([]);
@@ -75,7 +75,7 @@ function App() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: token }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
@@ -91,7 +91,7 @@ function App() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: token }
+        headers: { Authorization: `Bearer ${token}` }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
@@ -124,7 +124,7 @@ function App() {
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
       await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: localStorage.getItem('token') }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
@@ -163,7 +163,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
       await axios.put(`${API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
-        headers: { Authorization: localStorage.getItem('token') }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       setModoEdicion(false);
@@ -179,7 +179,7 @@ function App() {
   const eliminarCliente = async (id) => {
     try {
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: localStorage.getItem('token') }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -200,7 +200,7 @@ function App() {
         estado_pago: 'Pagado',
       };
       await axios.put(`${API_URL}/clientes/${id}`, clienteAEnviar, {
-        headers: { Authorization: localStorage.getItem('token') }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);

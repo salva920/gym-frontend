@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, Card, CardContent } from '@mui/mate
 import axios from 'axios';
 import './Login.css';
 
-const API_URL = 'https://gym-backend-production.up.railway.app';
+const API_URL = '/api';
 
 const Login = ({ setAuth }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });

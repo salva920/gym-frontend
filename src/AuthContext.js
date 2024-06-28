@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode'; // Correcto
+import * as jwtDecode from 'jwt-decode'; // Correcto
 
 const AuthContext = createContext();
 

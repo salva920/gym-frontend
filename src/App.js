@@ -15,7 +15,6 @@ import './App.css';
 
 const API_URL = '/api';
 
-
 function App() {
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
@@ -124,7 +123,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`api/clientes`, clienteAEnviar, {
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -163,7 +162,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/api/clientes/${cliente.id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -179,7 +178,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/clientes/${id}`, {
+      await axios.delete(`${API_URL}/clientes/${id}`, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();
@@ -200,7 +199,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
         estado_pago: 'Pagado',
       };
-      await axios.put(`${API_URL}/api/clientes/${id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/${id}`, clienteAEnviar, {
         headers: { Authorization: localStorage.getItem('token') }
       });
       obtenerClientes();

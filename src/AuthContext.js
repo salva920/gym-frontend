@@ -10,9 +10,15 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (authToken) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-      const decodedToken = jwtDecode(authToken);
-      setUser(decodedToken);
+      try {
+        const decodedToken = jwtDecode(authToken);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+        setUser(decodedToken);
+      } catch (error) {
+        console.error("Error decodificando el token:", error);
+        setAuthToken(null);
+        localStorage.removeItem('authToken'); // Elimina el token si no es válido
+      }
     } else {
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);

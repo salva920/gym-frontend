@@ -58,6 +58,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const verificarToken = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setAuth(true); // Asumiendo que un token existente es suficiente para autenticar
+      }
+    };
+
+    verificarToken();
+  }, []);
+
+  useEffect(() => {
     if (auth) {
       obtenerClientes();
       verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse

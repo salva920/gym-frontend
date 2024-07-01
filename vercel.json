@@ -1,15 +1,17 @@
 {
   "version": 2,
-  "name": "gym-app",
+  "name": "gym-frontend",
   "builds": [
     {
       "src": "gym-backend/server.js",
       "use": "@vercel/node"
     },
     {
-      "src": "src/App.js",
+      "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "build" }
+      "config": {
+        "distDir": "build"
+      }
     }
   ],
   "routes": [

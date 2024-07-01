@@ -17,8 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/gym-backend/server.js",
-      "methods": ["GET"]
+      "dest": "/index.html"
     }
   ]
 }

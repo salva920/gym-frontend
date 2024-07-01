@@ -23,10 +23,10 @@ const Login = ({ setAuth }) => {
         localStorage.setItem('token', res.data.token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`; // Agregar el token a las cabeceras
       } else {
-        setError('Invalid credentials');
+        setError('Credenciales inválidas');
       }
     } catch (error) {
-      setError('Error logging in');
+      setError('Error al iniciar sesión');
     }
   };
 

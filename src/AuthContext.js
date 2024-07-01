@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode'; // Cambia esto para que importe correctamente
+import { decode } from 'jwt-decode'; // Importación correcta
 
 const AuthContext = createContext();
 
@@ -10,9 +10,15 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (authToken) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-      const decodedToken = jwtDecode(authToken);
-      setUser(decodedToken);
+      try {
+        const decodedToken = decode(authToken);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+        setUser(decodedToken);
+      } catch (error) {
+        console.error("Error decodificando el token:", error);
+        setAuthToken(null);
+        localStorage.removeItem('authToken'); // Elimina el token si no es válido
+      }
     } else {
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);

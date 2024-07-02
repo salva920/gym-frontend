@@ -186,12 +186,10 @@ function App() {
     }
   };
   
- 
   const eliminarCliente = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -201,28 +199,19 @@ function App() {
     }
   };
   
-  
   const marcarComoSolvente = async (id) => {
     try {
-      const cliente = clientes.find(c => c._id === id);
-      const clienteAEnviar = {
-        ...cliente,
-        fecha_nacimiento: formatDate(cliente.fecha_nacimiento),
-        fecha_inicio: formatDate(cliente.fecha_inicio),
-        fechaRegistro: formatDate(cliente.fechaRegistro),
-        estado_pago: 'Pagado',
-      };
-      await axios.put(`${API_URL}/clientes/${id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
-      setPdfCliente(clienteAEnviar);
       toast.success("Cliente marcado como solvente");
     } catch (error) {
       console.error("Error al marcar como solvente:", error);
       toast.error("Error al marcar como solvente");
     }
   };
+  
   
 
   const handleLogout = () => {

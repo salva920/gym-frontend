@@ -164,7 +164,6 @@ function App() {
       toast.error("Error al agregar el cliente");
     }
   };
-
   const editarCliente = async (cliente) => {
     try {
       const clienteAEnviar = {
@@ -173,7 +172,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente.id}`, clienteAEnviar, {
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
@@ -186,11 +185,13 @@ function App() {
       toast.error("Error al editar el cliente");
     }
   };
-
+  
+ 
   const eliminarCliente = async (id) => {
     try {
+      const token = localStorage.getItem('token');
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -199,10 +200,11 @@ function App() {
       toast.error("Error al eliminar el cliente");
     }
   };
-
+  
+  
   const marcarComoSolvente = async (id) => {
     try {
-      const cliente = clientes.find(c => c.id === id);
+      const cliente = clientes.find(c => c._id === id);
       const clienteAEnviar = {
         ...cliente,
         fecha_nacimiento: formatDate(cliente.fecha_nacimiento),
@@ -221,6 +223,7 @@ function App() {
       toast.error("Error al marcar como solvente");
     }
   };
+  
 
   const handleLogout = () => {
     setAuth(false);

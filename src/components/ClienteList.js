@@ -102,25 +102,33 @@ const ClienteList = ({
           Agregar Cliente
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'flex-start',
+          mb: 2,
+          gap: 1,
+        }}
+      >
         <Button
           variant={filtro === 'todos' ? 'contained' : 'outlined'}
           onClick={() => setFiltro('todos')}
-          sx={{ mr: 1, backgroundColor: filtro === 'todos' ? '#28a745' : undefined, color: filtro === 'todos' ? '#fff' : undefined }}
+          sx={{ backgroundColor: filtro === 'todos' ? '#28a745' : undefined, color: filtro === 'todos' ? '#fff' : undefined }}
         >
           Todos
         </Button>
         <Button
           variant={filtro === 'pendiente' ? 'contained' : 'outlined'}
           onClick={() => setFiltro('pendiente')}
-          sx={{ mr: 1, backgroundColor: filtro === 'pendiente' ? '#ffc107' : undefined, color: filtro === 'pendiente' ? '#fff' : undefined }}
+          sx={{ backgroundColor: filtro === 'pendiente' ? '#ffc107' : undefined, color: filtro === 'pendiente' ? '#fff' : undefined }}
         >
           Pendiente
         </Button>
         <Button
           variant={filtro === 'completado' ? 'contained' : 'outlined'}
           onClick={() => setFiltro('completado')}
-          sx={{ mr: 1, backgroundColor: filtro === 'completado' ? '#007bff' : undefined, color: filtro === 'completado' ? '#fff' : undefined }}
+          sx={{ backgroundColor: filtro === 'completado' ? '#007bff' : undefined, color: filtro === 'completado' ? '#fff' : undefined }}
         >
           Completado
         </Button>
@@ -155,7 +163,7 @@ const ClienteList = ({
           </TableHead>
           <TableBody>
             {currentItems.map((cliente) => (
-              <TableRow key={cliente.id} onClick={() => setClienteSeleccionado(cliente)} className="tableRow">
+              <TableRow key={cliente._id} onClick={() => setClienteSeleccionado(cliente)} className="tableRow">
                 <TableCell>{cliente.nombre}</TableCell>
                 <TableCell>{cliente.cedula}</TableCell>
                 <TableCell>{cliente.telefono}</TableCell>
@@ -169,12 +177,12 @@ const ClienteList = ({
                   <Button
                     variant="contained"
                     color={cliente.estado_pago === 'Pagado' ? 'success' : 'warning'}
-                    onClick={(e) => { e.stopPropagation(); marcarComoSolvente(cliente.id); }}
+                    onClick={(e) => { e.stopPropagation(); marcarComoSolvente(cliente._id); }}
                     sx={{ mr: 1 }}
                   >
                     {cliente.estado_pago === 'Pagado' ? 'Solvente' : 'Solventar'}
                   </Button>
-                  <Button variant="contained" color="error" onClick={(e) => { e.stopPropagation(); eliminarCliente(cliente.id); }}>
+                  <Button variant="contained" color="error" onClick={(e) => { e.stopPropagation(); eliminarCliente(cliente._id); }}>
                     Eliminar
                   </Button>
                 </TableCell>

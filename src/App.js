@@ -188,14 +188,14 @@ function App() {
   
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`, {
+      await axios.delete(`${API_API}/clientes/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
-      console.error("Error al eliminar el cliente:", error);
-      toast.error("Error al eliminar el cliente");
+      console.error("Error al eliminar el cliente:", error.response ? error.response.data : error.message);
+      toast.error(`Error al eliminar el cliente: ${error.response ? error.response.data.message : error.message}`);
     }
   };
   

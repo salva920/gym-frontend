@@ -211,6 +211,7 @@ const ClienteList = ({
               <CloseIcon />
             </IconButton>
           </Box>
+          
           {clienteSeleccionado && (
             <Box className="modalContent">
               <Typography variant="body1"><strong>Nombre:</strong> {clienteSeleccionado.nombre}</Typography>

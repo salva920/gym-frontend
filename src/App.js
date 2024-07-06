@@ -183,10 +183,11 @@ function App() {
       setMostrarFormulario(false);
       toast.success("Cliente editado exitosamente");
     } catch (error) {
-      console.error("Error al editar el cliente:", error);
-      toast.error("Error al editar el cliente");
+      console.error("Error al editar el cliente:", error.response ? error.response.data : error.message);
+      toast.error(`Error al editar el cliente: ${error.response ? error.response.data.message : error.message}`);
     }
   };
+  
   
   const eliminarCliente = async (id) => {
     try {

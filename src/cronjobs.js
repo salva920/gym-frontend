@@ -41,9 +41,14 @@ const actualizarEstadoClientes = async () => {
 
     for (const cliente of clientes) {
       const fechaRegistro = new Date(cliente.fechaRegistro);
+      if (isNaN(fechaRegistro)) {
+        console.error(`Fecha de registro inválida para el cliente: ${cliente._id}`);
+        continue;
+      }
+
       const diferenciaMeses = (hoy.getFullYear() - fechaRegistro.getFullYear()) * 12 + (hoy.getMonth() - fechaRegistro.getMonth());
 
-      if (diferenciaMeses >= 1 && cliente.estado_pago === 'Pagado') {
+      if (diferenciaMeses >= 1 && cliente.estado_pago === 'Solvente') {
         cliente.estado_pago = 'Pendiente';
         await cliente.save();
       }

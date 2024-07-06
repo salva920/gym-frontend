@@ -161,7 +161,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'Pendiente',
+        estado_pago: 'solvente', // Aseguramos que el nuevo cliente se guarda como solventado
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });

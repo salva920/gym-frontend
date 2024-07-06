@@ -122,7 +122,15 @@ function App() {
 
   const formatDate = (date) => {
     if (!date) return null;
-    return new Date(date).toISOString().split('T')[0];
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
   };
 
   const agregarCliente = async (e) => {
@@ -165,7 +173,6 @@ function App() {
     }
   };
 
-  //todo funciona hasta este punto edit muestra error 500, eliminar y marcar como solvente 
   const editarCliente = async (cliente) => {
     try {
       const clienteAEnviar = {
@@ -187,8 +194,7 @@ function App() {
       toast.error(`Error al editar el cliente: ${error.response ? error.response.data.message : error.message}`);
     }
   };
-  
-  
+
   const eliminarCliente = async (id) => {
     try {
       await axios.delete(`${API_URL}/clientes/${id}`, {
@@ -201,7 +207,7 @@ function App() {
       toast.error(`Error al eliminar el cliente: ${error.response ? error.response.data.message : error.message}`);
     }
   };
-  
+
   const marcarComoSolvente = async (id) => {
     try {
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
@@ -214,8 +220,6 @@ function App() {
       toast.error("Error al marcar como solvente");
     }
   };
-  
-  
 
   const handleLogout = () => {
     setAuth(false);

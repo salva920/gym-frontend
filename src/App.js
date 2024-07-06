@@ -164,6 +164,8 @@ function App() {
       toast.error("Error al agregar el cliente");
     }
   };
+
+  //todo funciona hasta este punto edit muestra error 500, eliminar y marcar como solvente 
   const editarCliente = async (cliente) => {
     try {
       const clienteAEnviar = {
@@ -188,7 +190,7 @@ function App() {
   
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_API}/clientes/${id}`, {
+      await axios.delete(`${API_URL}/clientes/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();

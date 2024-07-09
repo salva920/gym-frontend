@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AuthProvider } from './AuthContext'; // Asegúrate de que la ruta sea correcta
+import { AuthProvider } from './AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -36,4 +36,3 @@ root.render(
     </ThemeProvider>
   </React.StrictMode>
 );
-

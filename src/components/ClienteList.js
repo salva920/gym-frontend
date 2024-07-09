@@ -60,8 +60,8 @@ const ClienteList = ({
   const clientesFiltrados = clientesOrdenados.filter((cliente) => {
     if (filtro === 'pendiente') {
       return cliente.estado_pago === 'Pendiente';
-    } else if (filtro === 'solvente') {
-      return cliente.estado_pago === 'Solvente';
+    } else if (filtro === 'completado') {
+      return cliente.estado_pago === 'Pagado';
     } else {
       return true;
     }
@@ -126,11 +126,11 @@ const ClienteList = ({
           Pendiente
         </Button>
         <Button
-          variant={filtro === 'solvente' ? 'contained' : 'outlined'}
-          onClick={() => setFiltro('solvente')}
-          sx={{ backgroundColor: filtro === 'solvente' ? '#007bff' : undefined, color: filtro === 'solvente' ? '#fff' : undefined }}
+          variant={filtro === 'completado' ? 'contained' : 'outlined'}
+          onClick={() => setFiltro('completado')}
+          sx={{ backgroundColor: filtro === 'completado' ? '#007bff' : undefined, color: filtro === 'completado' ? '#fff' : undefined }}
         >
-          Solvente
+          Completado
         </Button>
         <Button variant="outlined" onClick={handleMenuClick}>
           Filtrar por Hora
@@ -176,11 +176,11 @@ const ClienteList = ({
                   </Button>
                   <Button
                     variant="contained"
-                    color={cliente.estado_pago === 'Solvente' ? 'success' : 'warning'}
-                    onClick={(e) => { e.stopPropagation(); console.log(`Marcando cliente con ID: ${cliente._id}`); marcarComoSolvente(cliente._id); }}
+                    color={cliente.estado_pago === 'Pagado' ? 'success' : 'warning'}
+                    onClick={(e) => { e.stopPropagation(); marcarComoSolvente(cliente._id); }}
                     sx={{ mr: 1 }}
                   >
-                    {cliente.estado_pago === 'Solvente' ? 'Solvente' : 'Solventar'}
+                    {cliente.estado_pago === 'Pagado' ? 'Solvente' : 'Solventar'}
                   </Button>
                   <Button variant="contained" color="error" onClick={(e) => { e.stopPropagation(); eliminarCliente(cliente._id); }}>
                     Eliminar

@@ -74,7 +74,9 @@ function App() {
   const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -87,7 +89,9 @@ function App() {
 
   const verificarEstadoClientes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -126,7 +130,9 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar);
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
       setNuevoCliente({
@@ -163,7 +169,9 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar);
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       obtenerClientes();
       setModoEdicion(false);
       setClienteEditando(null);
@@ -177,7 +185,9 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`);
+      await axios.delete(`${API_URL}/clientes/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
@@ -188,7 +198,9 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
-      await axios.put(`${API_URL}/clientes/solventar/${id}`);
+      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
     } catch (error) {

@@ -7,25 +7,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.tableRow button:hover {
-  background-color: #0056b3;
-  color: #fff;
 }
 
 .tableContainer {
   margin-bottom: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
 }
 
 .tableContainer table {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .tableContainer th, .tableContainer td {
@@ -61,12 +52,7 @@
 
 .pagination li a {
   text-decoration: none;
-  color: #007bff;
-  transition: color 0.3s ease;
-}
-
-.pagination li a:hover {
-  color: #0056b3;
+  color: #ff0000;
 }
 
 .pagination .active a {
@@ -117,10 +103,6 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: #ece3e3;
-}
-
-.closeButton:hover {
-  color: #000;
 }
 
 @media (max-width: 768px) {

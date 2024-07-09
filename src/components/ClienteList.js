@@ -177,7 +177,7 @@ const ClienteList = ({
                   <Button
                     variant="contained"
                     color={cliente.estado_pago === 'Solvente' ? 'success' : 'warning'}
-                    onClick={(e) => { e.stopPropagation(); marcarComoSolvente(cliente._id); }}
+                    onClick={(e) => { e.stopPropagation(); console.log(`Marcando cliente con ID: ${cliente._id}`); marcarComoSolvente(cliente._id); }}
                     sx={{ mr: 1 }}
                   >
                     {cliente.estado_pago === 'Solvente' ? 'Solvente' : 'Solventar'}

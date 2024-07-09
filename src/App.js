@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 import AgregarClienteForm from './components/AgregarClienteForm';
@@ -17,7 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext); // Usa el contexto de autenticación
+  const { authToken, setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -58,20 +58,7 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (authToken) {
-      obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
-    }
-  }, [authToken]);
-
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente]);
-
-  const obtenerClientes = async () => {
+  const obtenerClientes = useCallback(async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${API_URL}/clientes`, {
@@ -85,9 +72,9 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authToken]);
 
-  const verificarEstadoClientes = async () => {
+  const verificarEstadoClientes = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/clientes`, {
         headers: { Authorization: `Bearer ${authToken}` }
@@ -100,13 +87,26 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  };
+  }, [authToken]);
+
+  useEffect(() => {
+    if (authToken) {
+      obtenerClientes();
+      verificarEstadoClientes();
+    }
+  }, [authToken, obtenerClientes, verificarEstadoClientes]);
+
+  useEffect(() => {
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
 
   useEffect(() => {
     const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, []);
+  }, [verificarEstadoClientes]);
 
   const formatDate = (date) => {
     if (!date) return null;

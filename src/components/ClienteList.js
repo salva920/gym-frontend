@@ -60,8 +60,8 @@ const ClienteList = ({
   const clientesFiltrados = clientesOrdenados.filter((cliente) => {
     if (filtro === 'pendiente') {
       return cliente.estado_pago === 'Pendiente';
-    } else if (filtro === 'completado') {
-      return cliente.estado_pago === 'Pagado';
+    } else if (filtro === 'solvente') {
+      return cliente.estado_pago === 'Solvente';
     } else {
       return true;
     }
@@ -126,11 +126,11 @@ const ClienteList = ({
           Pendiente
         </Button>
         <Button
-          variant={filtro === 'completado' ? 'contained' : 'outlined'}
-          onClick={() => setFiltro('completado')}
-          sx={{ backgroundColor: filtro === 'completado' ? '#007bff' : undefined, color: filtro === 'completado' ? '#fff' : undefined }}
+          variant={filtro === 'solvente' ? 'contained' : 'outlined'}
+          onClick={() => setFiltro('solvente')}
+          sx={{ backgroundColor: filtro === 'solvente' ? '#007bff' : undefined, color: filtro === 'solvente' ? '#fff' : undefined }}
         >
-          Completado
+          Solvente
         </Button>
         <Button variant="outlined" onClick={handleMenuClick}>
           Filtrar por Hora

@@ -161,7 +161,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'Pendiente',
+        estado_pago: 'solvente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -181,6 +181,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
+      console.log(`Editando cliente con ID: ${cliente._id}`);
       await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -197,6 +198,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
+      console.log(`Eliminando cliente con ID: ${id}`);
       await axios.delete(`${API_URL}/clientes/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -210,6 +212,7 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
+      console.log(`Marcando como solvente cliente con ID: ${id}`);
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -265,6 +268,7 @@ function App() {
               marcarComoSolvente={marcarComoSolvente}
               eliminarCliente={eliminarCliente}
               editarCliente={(cliente) => {
+                console.log(`Cliente seleccionado para edición: ${cliente._id}`);
                 setModoEdicion(true);
                 setClienteEditando(cliente);
                 setMostrarFormulario(true);

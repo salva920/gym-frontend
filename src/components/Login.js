@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Box, Button, TextField, Typography, Card, CardContent } from '@mui/material';
 import axios from 'axios';
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
+import { AuthContext } from '../AuthContext'; // Importa el contexto de autenticación
+
 import './Login.css';
 
 const API_URL = '/api';

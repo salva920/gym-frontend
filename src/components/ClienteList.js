@@ -176,11 +176,11 @@ const ClienteList = ({
                   </Button>
                   <Button
                     variant="contained"
-                    color={cliente.estado_pago === 'Pagado' ? 'success' : 'warning'}
+                    color={cliente.estado_pago === 'Solvente' ? 'success' : 'warning'}
                     onClick={(e) => { e.stopPropagation(); marcarComoSolvente(cliente._id); }}
                     sx={{ mr: 1 }}
                   >
-                    {cliente.estado_pago === 'Pagado' ? 'Solvente' : 'Solventar'}
+                    {cliente.estado_pago === 'Solvente' ? 'Solvente' : 'Solventar'}
                   </Button>
                   <Button variant="contained" color="error" onClick={(e) => { e.stopPropagation(); eliminarCliente(cliente._id); }}>
                     Eliminar

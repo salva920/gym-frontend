@@ -31,7 +31,7 @@ function App() {
     tipo_entrenamiento: 'General',
     fecha_inicio: '',
     tipo_membresia: 'Mensual',
-    estado_pago: 'solvente',
+    estado_pago: 'Solvente',
     fechaRegistro: new Date().toISOString().split('T')[0],
     notas: ''
   });
@@ -142,8 +142,9 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
+      const token = localStorage.getItem('token');
       await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
@@ -161,7 +162,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'solvente',
+        estado_pago: 'Pendiente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -181,9 +182,9 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      console.log(`Editando cliente con ID: ${cliente._id}`);
+      const token = localStorage.getItem('token');
       await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       obtenerClientes();
       setModoEdicion(false);
@@ -198,9 +199,9 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      console.log(`Eliminando cliente con ID: ${id}`);
+      const token = localStorage.getItem('token');
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -212,9 +213,9 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
-      console.log(`Marcando como solvente cliente con ID: ${id}`);
+      const token = localStorage.getItem('token');
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
@@ -268,7 +269,6 @@ function App() {
               marcarComoSolvente={marcarComoSolvente}
               eliminarCliente={eliminarCliente}
               editarCliente={(cliente) => {
-                console.log(`Cliente seleccionado para edición: ${cliente._id}`);
                 setModoEdicion(true);
                 setClienteEditando(cliente);
                 setMostrarFormulario(true);

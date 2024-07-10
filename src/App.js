@@ -17,7 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext);
+  const { authToken, setAuthToken } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -59,23 +59,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (authToken) {
-      obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
-    }
-  }, [authToken]);
+    const verificarToken = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setAuthToken(token); // Asumiendo que un token existente es suficiente para autenticar
+      }
+    };
 
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente]);
-
-  useEffect(() => {
-    const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
-
-    return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, []);
+    verificarToken();
+  }, [setAuthToken]);
 
   const obtenerClientes = useCallback(async () => {
     setLoading(true);
@@ -107,6 +99,25 @@ function App() {
       console.error("Error al verificar el estado de los clientes:", error);
     }
   }, [authToken]);
+
+  useEffect(() => {
+    if (authToken) {
+      obtenerClientes();
+      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
+    }
+  }, [authToken, obtenerClientes, verificarEstadoClientes]);
+
+  useEffect(() => {
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
+
+  useEffect(() => {
+    const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
+
+    return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
+  }, [verificarEstadoClientes]);
 
   const formatDate = (date) => {
     if (!date) return null;

@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
 import ClienteList from './components/ClienteList';
@@ -12,12 +11,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
+import { AuthContext } from './AuthContext';
 import './App.css';
 
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -42,6 +41,7 @@ function App() {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
+  const { authToken, setAuthToken } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pdfCliente, setPdfCliente] = useState(null);
@@ -61,7 +61,7 @@ function App() {
   useEffect(() => {
     if (authToken) {
       obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
+      verificarEstadoClientes();
     }
   }, [authToken]);
 
@@ -74,9 +74,7 @@ function App() {
   const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -89,9 +87,7 @@ function App() {
 
   const verificarEstadoClientes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -103,9 +99,9 @@ function App() {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
+    const intervalId = setInterval(verificarEstadoClientes, 86400000);
 
-    return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId);
   }, []);
 
   const formatDate = (date) => {
@@ -287,7 +283,7 @@ function App() {
                   link.href = url;
                   link.download = `Factura_${pdfCliente.nombre}.pdf`;
                   link.click();
-                  setPdfCliente(null); // Reset the pdfCliente to avoid re-triggering the download
+                  setPdfCliente(null);
                 }
                 return null;
               }}

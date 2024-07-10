@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
+import { AuthContext } from './AuthContext';
 import './App.css';
 
 const API_URL = '/api';

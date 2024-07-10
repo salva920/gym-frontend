@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
@@ -11,7 +11,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
-import { AuthContext } from './AuthContext';
 import './App.css';
 
 const API_URL = '/api';

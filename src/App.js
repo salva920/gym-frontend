@@ -17,7 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext);
+  const { authToken, setAuthToken } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',

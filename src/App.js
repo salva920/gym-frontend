@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
@@ -17,7 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken } = useContext(AuthContext);
+  const { authToken, setAuthToken, user } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -58,18 +58,20 @@ function App() {
     };
   }, []);
 
-  const verificarToken = useCallback(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setAuthToken(token);
+  useEffect(() => {
+    if (authToken) {
+      obtenerClientes();
+      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
     }
-  }, [setAuthToken]);
+  }, [authToken]);
 
   useEffect(() => {
-    verificarToken();
-  }, [verificarToken]);
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
 
-  const obtenerClientes = useCallback(async () => {
+  const obtenerClientes = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -84,9 +86,9 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const verificarEstadoClientes = useCallback(async () => {
+  const verificarEstadoClientes = async () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
@@ -100,26 +102,13 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  }, []);
-
-  useEffect(() => {
-    if (authToken) {
-      obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
-    }
-  }, [authToken, obtenerClientes, verificarEstadoClientes]);
-
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente, pdfLinkRef]);
+  };
 
   useEffect(() => {
     const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, [verificarEstadoClientes]);
+  }, []);
 
   const formatDate = (date) => {
     if (!date) return null;
@@ -144,7 +133,7 @@ function App() {
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
       await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
@@ -183,7 +172,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
       await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       setModoEdicion(false);
@@ -199,7 +188,7 @@ function App() {
   const eliminarCliente = async (id) => {
     try {
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -212,7 +201,7 @@ function App() {
   const marcarComoSolvente = async (id) => {
     try {
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
@@ -300,7 +289,7 @@ function App() {
                   link.href = url;
                   link.download = `Factura_${pdfCliente.nombre}.pdf`;
                   link.click();
-                  setPdfCliente(null);
+                  setPdfCliente(null); // Reset the pdfCliente to avoid re-triggering the download
                 }
                 return null;
               }}

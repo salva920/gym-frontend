@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
 import './App.css';
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 
 const API_URL = '/api';
 
@@ -32,7 +31,7 @@ function App() {
     tipo_entrenamiento: 'General',
     fecha_inicio: '',
     tipo_membresia: 'Mensual',
-    estado_pago: 'solvente',
+    estado_pago: 'Solvente',
     fechaRegistro: new Date().toISOString().split('T')[0],
     notas: ''
   });
@@ -41,11 +40,11 @@ function App() {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
+  const [auth, setAuth] = useState(false);
   const [loading, setLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pdfCliente, setPdfCliente] = useState(null);
   const pdfLinkRef = useRef(null);
-  const { authToken, setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,21 +59,21 @@ function App() {
 
   useEffect(() => {
     const verificarToken = () => {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       if (token) {
-        setAuthToken(token);
+        setAuth(true); // Asumiendo que un token existente es suficiente para autenticar
       }
     };
 
     verificarToken();
-  }, [setAuthToken]);
+  }, []);
 
   useEffect(() => {
-    if (authToken) {
+    if (auth) {
       obtenerClientes();
       verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
     }
-  }, [authToken]);
+  }, [auth]);
 
   useEffect(() => {
     if (pdfCliente && pdfLinkRef.current) {
@@ -85,7 +84,10 @@ function App() {
   const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -98,7 +100,10 @@ function App() {
 
   const verificarEstadoClientes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -117,15 +122,7 @@ function App() {
 
   const formatDate = (date) => {
     if (!date) return null;
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
+    return new Date(date).toISOString().split('T')[0];
   };
 
   const agregarCliente = async (e) => {
@@ -137,7 +134,9 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar);
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
       setNuevoCliente({
@@ -154,7 +153,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'Pendiente',
+        estado_pago: 'Solvente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -165,7 +164,6 @@ function App() {
       toast.error("Error al agregar el cliente");
     }
   };
-
   const editarCliente = async (cliente) => {
     try {
       const clienteAEnviar = {
@@ -174,21 +172,25 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar);
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       obtenerClientes();
       setModoEdicion(false);
       setClienteEditando(null);
       setMostrarFormulario(false);
       toast.success("Cliente editado exitosamente");
     } catch (error) {
-      console.error("Error al editar el cliente:", error.response ? error.response.data : error.message);
-      toast.error(`Error al editar el cliente: ${error.response ? error.response.data.message : error.message}`);
+      console.error("Error al editar el cliente:", error);
+      toast.error("Error al editar el cliente");
     }
   };
-
+  
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`);
+      await axios.delete(`${API_URL}/clientes/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
@@ -196,10 +198,12 @@ function App() {
       toast.error(`Error al eliminar el cliente: ${error.response ? error.response.data.message : error.message}`);
     }
   };
-
+  
   const marcarComoSolvente = async (id) => {
     try {
-      await axios.put(`${API_URL}/clientes/solventar/${id}`);
+      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
     } catch (error) {
@@ -207,10 +211,12 @@ function App() {
       toast.error("Error al marcar como solvente");
     }
   };
+  
+  
 
   const handleLogout = () => {
-    setAuthToken('');
-    localStorage.removeItem('authToken');
+    setAuth(false);
+    localStorage.removeItem('token');
     toast.info("Sesión cerrada");
   };
 
@@ -231,8 +237,8 @@ function App() {
     (selectedHour ? cliente.horario === selectedHour : true)
   );
 
-  if (!authToken) {
-    return <Login setAuthToken={setAuthToken} />;
+  if (!auth) {
+    return <Login setAuth={setAuth} />;
   }
 
   return (

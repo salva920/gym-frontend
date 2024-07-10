@@ -60,7 +60,7 @@ function App() {
 
   useEffect(() => {
     const verificarToken = () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (token) {
         setAuthToken(token); // Asumiendo que un token existente es suficiente para autenticar
       }
@@ -72,9 +72,7 @@ function App() {
   const obtenerClientes = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -83,13 +81,11 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [authToken]);
+  }, []);
 
   const verificarEstadoClientes = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -98,7 +94,7 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  }, [authToken]);
+  }, []);
 
   useEffect(() => {
     if (authToken) {
@@ -141,9 +137,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar);
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
       setNuevoCliente({
@@ -180,9 +174,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar);
       obtenerClientes();
       setModoEdicion(false);
       setClienteEditando(null);
@@ -196,9 +188,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.delete(`${API_URL}/clientes/${id}`);
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
@@ -209,9 +199,7 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
-      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.put(`${API_URL}/clientes/solventar/${id}`);
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
     } catch (error) {

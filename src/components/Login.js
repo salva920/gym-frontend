@@ -2,15 +2,14 @@ import React, { useState, useContext } from 'react';
 import { Box, Button, TextField, Typography, Card, CardContent } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext'; // Importa el contexto de autenticación
-
 import './Login.css';
 
 const API_URL = '/api';
 
-const Login = () => {
-  const { setAuthToken } = useContext(AuthContext);
+const Login = ({ setAuth }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const { setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,9 +21,9 @@ const Login = () => {
     try {
       const res = await axios.post(`${API_URL}/login`, credentials);
       if (res.data.auth) {
-        setAuthToken(res.data.token);
+        setAuth(true);
+        setAuthToken(res.data.token); // Establece el token de autenticación en el contexto
         localStorage.setItem('authToken', res.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       } else {
         setError('Credenciales inválidas');
       }

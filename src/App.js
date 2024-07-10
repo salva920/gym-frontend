@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from 'react'; // Asegúrate de importar useContext y useCallback
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import axios from 'axios';
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
@@ -17,7 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext); // Usa el contexto de autenticación
+  const { authToken, setAuthToken } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -62,19 +62,50 @@ function App() {
     const verificarToken = () => {
       const token = localStorage.getItem('token');
       if (token) {
-        setAuthToken(token); // Asegúrate de usar setAuthToken del contexto
+        setAuthToken(token); // Asumiendo que un token existente es suficiente para autenticar
       }
     };
 
     verificarToken();
   }, [setAuthToken]);
 
+  const obtenerClientes = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      setClientes(res.data);
+      toast.success("Clientes obtenidos exitosamente");
+    } catch (error) {
+      console.error("Error al obtener los clientes:", error);
+      toast.error("Error al obtener los clientes");
+    } finally {
+      setLoading(false);
+    }
+  }, [authToken]);
+
+  const verificarEstadoClientes = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
+      if (clientesPendientes.length > 0) {
+        toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
+      }
+      setClientes(res.data);
+    } catch (error) {
+      console.error("Error al verificar el estado de los clientes:", error);
+    }
+  }, [authToken]);
+
   useEffect(() => {
     if (authToken) {
       obtenerClientes();
       verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
     }
-  }, [authToken]);
+  }, [authToken, obtenerClientes, verificarEstadoClientes]);
 
   useEffect(() => {
     if (pdfCliente && pdfLinkRef.current) {
@@ -87,39 +118,6 @@ function App() {
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
   }, [verificarEstadoClientes]);
-
-  const obtenerClientes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setClientes(res.data);
-      toast.success("Clientes obtenidos exitosamente");
-    } catch (error) {
-      console.error("Error al obtener los clientes:", error);
-      toast.error("Error al obtener los clientes");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  
-  const verificarEstadoClientes = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
-      if (clientesPendientes.length > 0) {
-        toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
-      }
-      setClientes(res.data);
-    } catch (error) {
-      console.error("Error al verificar el estado de los clientes:", error);
-    }
-  }, []);
 
   const formatDate = (date) => {
     if (!date) return null;
@@ -162,7 +160,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'solvente', // Aseguramos que el nuevo cliente se guarda como solventado
+        estado_pago: 'solvente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -300,7 +298,7 @@ function App() {
                   link.href = url;
                   link.download = `Factura_${pdfCliente.nombre}.pdf`;
                   link.click();
-                  setPdfCliente(null); // Reset the pdfCliente to avoid re-triggering the download
+                  setPdfCliente(null);
                 }
                 return null;
               }}

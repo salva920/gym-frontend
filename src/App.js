@@ -17,6 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
+  const { authToken, setAuthToken } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -41,7 +42,6 @@ function App() {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
-  const { authToken, setAuthToken } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pdfCliente, setPdfCliente] = useState(null);
@@ -74,7 +74,9 @@ function App() {
   const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -87,7 +89,9 @@ function App() {
 
   const verificarEstadoClientes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`);
+      const res = await axios.get(`${API_URL}/clientes`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);

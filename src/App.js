@@ -1,6 +1,5 @@
-import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
 import ClienteList from './components/ClienteList';
@@ -13,11 +12,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
 import './App.css';
+import { AuthContext } from './AuthContext'; // Importar el contexto de autenticación
 
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
+  const { authToken } = useContext(AuthContext); // Usar el contexto de autenticación
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -33,7 +33,7 @@ function App() {
     tipo_entrenamiento: 'General',
     fecha_inicio: '',
     tipo_membresia: 'Mensual',
-    estado_pago: 'Solvente',
+    estado_pago: 'solvente',
     fechaRegistro: new Date().toISOString().split('T')[0],
     notas: ''
   });
@@ -58,12 +58,24 @@ function App() {
     };
   }, []);
 
-  const obtenerClientes = useCallback(async () => {
+  useEffect(() => {
+    if (authToken) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+      obtenerClientes();
+      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
+    }
+  }, [authToken]);
+
+  useEffect(() => {
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
+
+  const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -72,13 +84,11 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [authToken]);
+  };
 
-  const verificarEstadoClientes = useCallback(async () => {
+  const verificarEstadoClientes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -87,26 +97,13 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  }, [authToken]);
-
-  useEffect(() => {
-    if (authToken) {
-      obtenerClientes();
-      verificarEstadoClientes();
-    }
-  }, [authToken, obtenerClientes, verificarEstadoClientes]);
-
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente]);
+  };
 
   useEffect(() => {
     const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, [verificarEstadoClientes]);
+  }, []);
 
   const formatDate = (date) => {
     if (!date) return null;
@@ -130,9 +127,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar);
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
       setNuevoCliente({
@@ -149,7 +144,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'Solvente',
+        estado_pago: 'Pendiente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -169,9 +164,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar);
       obtenerClientes();
       setModoEdicion(false);
       setClienteEditando(null);
@@ -185,9 +178,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.delete(`${API_URL}/clientes/${id}`);
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
@@ -198,9 +189,7 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
-      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.put(`${API_URL}/clientes/solventar/${id}`);
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
     } catch (error) {
@@ -210,7 +199,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    setAuthToken(null);
+    setAuth(false);
     localStorage.removeItem('authToken');
     toast.info("Sesión cerrada");
   };
@@ -233,7 +222,7 @@ function App() {
   );
 
   if (!authToken) {
-    return <Login setAuthToken={setAuthToken} />;
+    return <Login setAuth={setAuth} />;
   }
 
   return (

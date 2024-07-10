@@ -24,6 +24,7 @@ const Login = ({ setAuth }) => {
         setAuth(true);
         setAuthToken(res.data.token); // Establece el token de autenticación en el contexto
         localStorage.setItem('authToken', res.data.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`; // Agregar el token a las cabeceras
       } else {
         setError('Credenciales inválidas');
       }

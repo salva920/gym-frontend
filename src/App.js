@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import axios from 'axios';
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
@@ -17,6 +17,7 @@ import './App.css';
 const API_URL = '/api';
 
 function App() {
+  const { authToken, setAuthToken, user } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -41,7 +42,6 @@ function App() {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
-  const [auth, setAuth] = useState(false);
   const [loading, setLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pdfCliente, setPdfCliente] = useState(null);
@@ -58,36 +58,11 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const verificarToken = () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        setAuth(true); // Asumiendo que un token existente es suficiente para autenticar
-      }
-    };
-
-    verificarToken();
-  }, []);
-
-  useEffect(() => {
-    if (auth) {
-      obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
-    }
-  }, [auth]);
-
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente]);
-
-  const obtenerClientes = async () => {
+  const obtenerClientes = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
@@ -97,13 +72,12 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authToken]);
 
-  const verificarEstadoClientes = async () => {
+  const verificarEstadoClientes = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
@@ -113,13 +87,26 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  };
+  }, [authToken]);
+
+  useEffect(() => {
+    if (authToken) {
+      obtenerClientes();
+      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
+    }
+  }, [authToken, obtenerClientes, verificarEstadoClientes]);
+
+  useEffect(() => {
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
 
   useEffect(() => {
     const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, []);
+  }, [verificarEstadoClientes]);
 
   const formatDate = (date) => {
     if (!date) return null;
@@ -144,7 +131,7 @@ function App() {
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
       await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
@@ -183,7 +170,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
       await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       setModoEdicion(false);
@@ -199,7 +186,7 @@ function App() {
   const eliminarCliente = async (id) => {
     try {
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -212,7 +199,7 @@ function App() {
   const marcarComoSolvente = async (id) => {
     try {
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
@@ -223,8 +210,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    setAuth(false);
-    localStorage.removeItem('token');
+    setAuthToken(null);
+    localStorage.removeItem('authToken');
     toast.info("Sesión cerrada");
   };
 
@@ -245,8 +232,8 @@ function App() {
     (selectedHour ? cliente.horario === selectedHour : true)
   );
 
-  if (!auth) {
-    return <Login setAuth={setAuth} />;
+  if (!authToken) {
+    return <Login setAuth={setAuthToken} />;
   }
 
   return (

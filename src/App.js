@@ -48,34 +48,42 @@ function App() {
   const pdfLinkRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+    const verificarToken = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setAuth(true); // Asumiendo que un token existente es suficiente para autenticar
+      }
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+  
+    verificarToken();
   }, []);
-
+  
   useEffect(() => {
-    if (authToken) {
+    if (auth) {
       obtenerClientes();
-      verificarEstadoClientes();
+      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
     }
-  }, [authToken]);
-
+  }, [auth, obtenerClientes, verificarEstadoClientes]);
+  
   useEffect(() => {
     if (pdfCliente && pdfLinkRef.current) {
       pdfLinkRef.current.click();
     }
-  }, [pdfCliente]);
+  }, [pdfCliente, pdfLinkRef]);
+  
+  useEffect(() => {
+    const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
+  
+    return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
+  }, [verificarEstadoClientes]);
+  
 
-  const obtenerClientes = async () => {
+  const obtenerClientes = useCallback(async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
@@ -85,12 +93,13 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const verificarEstadoClientes = async () => {
+  }, []);
+  
+  const verificarEstadoClientes = useCallback(async () => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
@@ -100,13 +109,10 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  };
-
-  useEffect(() => {
-    const intervalId = setInterval(verificarEstadoClientes, 86400000);
-
-    return () => clearInterval(intervalId);
   }, []);
+  
+
+ 
 
   const formatDate = (date) => {
     if (!date) return null;

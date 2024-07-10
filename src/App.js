@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 import AgregarClienteForm from './components/AgregarClienteForm';
 import EditarClienteForm from './components/EditarClienteForm';
 import ClienteList from './components/ClienteList';
@@ -11,13 +12,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
-import { AuthContext } from './AuthContext';
 import './App.css';
 
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext);
+  const { authToken, setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -33,7 +33,7 @@ function App() {
     tipo_entrenamiento: 'General',
     fecha_inicio: '',
     tipo_membresia: 'Mensual',
-    estado_pago: 'solvente',
+    estado_pago: 'Solvente',
     fechaRegistro: new Date().toISOString().split('T')[0],
     notas: ''
   });
@@ -58,25 +58,11 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (authToken) {
-      obtenerClientes();
-      verificarEstadoClientes(); // Verificar el estado de los clientes al autenticarse
-    }
-  }, [authToken]);
-
-  useEffect(() => {
-    if (pdfCliente && pdfLinkRef.current) {
-      pdfLinkRef.current.click();
-    }
-  }, [pdfCliente]);
-
-  const obtenerClientes = async () => {
+  const obtenerClientes = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
@@ -86,13 +72,12 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authToken]);
 
-  const verificarEstadoClientes = async () => {
+  const verificarEstadoClientes = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
@@ -102,13 +87,26 @@ function App() {
     } catch (error) {
       console.error("Error al verificar el estado de los clientes:", error);
     }
-  };
+  }, [authToken]);
+
+  useEffect(() => {
+    if (authToken) {
+      obtenerClientes();
+      verificarEstadoClientes();
+    }
+  }, [authToken, obtenerClientes, verificarEstadoClientes]);
+
+  useEffect(() => {
+    if (pdfCliente && pdfLinkRef.current) {
+      pdfLinkRef.current.click();
+    }
+  }, [pdfCliente]);
 
   useEffect(() => {
     const intervalId = setInterval(verificarEstadoClientes, 86400000); // Verificar una vez al día (86400000 ms = 24 horas)
 
     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-  }, []);
+  }, [verificarEstadoClientes]);
 
   const formatDate = (date) => {
     if (!date) return null;
@@ -133,7 +131,7 @@ function App() {
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
       await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
@@ -151,7 +149,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'Pendiente',
+        estado_pago: 'Solvente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });
@@ -172,7 +170,7 @@ function App() {
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
       await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       setModoEdicion(false);
@@ -188,7 +186,7 @@ function App() {
   const eliminarCliente = async (id) => {
     try {
       await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
@@ -201,7 +199,7 @@ function App() {
   const marcarComoSolvente = async (id) => {
     try {
       await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
@@ -235,7 +233,7 @@ function App() {
   );
 
   if (!authToken) {
-    return <Login setAuth={setAuthToken} />;
+    return <Login setAuthToken={setAuthToken} />;
   }
 
   return (

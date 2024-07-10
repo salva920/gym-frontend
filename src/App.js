@@ -11,13 +11,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BlobProvider } from '@react-pdf/renderer';
 import FacturaPDF from './components/FacturaPDF';
-import { AuthContext } from './AuthContext';
 import './App.css';
+import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 
 const API_URL = '/api';
 
 function App() {
-  const { authToken, setAuthToken, user } = useContext(AuthContext);
   const [clientes, setClientes] = useState([]);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
@@ -46,6 +45,7 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [pdfCliente, setPdfCliente] = useState(null);
   const pdfLinkRef = useRef(null);
+  const { authToken, setAuthToken } = useContext(AuthContext); // Usa el contexto de autenticación
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,6 +57,17 @@ function App() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const verificarToken = () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        setAuthToken(token);
+      }
+    };
+
+    verificarToken();
+  }, [setAuthToken]);
 
   useEffect(() => {
     if (authToken) {
@@ -74,10 +85,7 @@ function App() {
   const obtenerClientes = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       setClientes(res.data);
       toast.success("Clientes obtenidos exitosamente");
     } catch (error) {
@@ -90,10 +98,7 @@ function App() {
 
   const verificarEstadoClientes = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/clientes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(`${API_URL}/clientes`);
       const clientesPendientes = res.data.filter(cliente => cliente.estado_pago === 'Pendiente');
       if (clientesPendientes.length > 0) {
         toast.info(`Hay ${clientesPendientes.length} clientes con pagos pendientes.`);
@@ -132,9 +137,7 @@ function App() {
         fecha_inicio: formatDate(nuevoCliente.fecha_inicio),
         fechaRegistro: formatDate(nuevoCliente.fechaRegistro),
       };
-      await axios.post(`${API_URL}/clientes`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${API_URL}/clientes`, clienteAEnviar);
       obtenerClientes();
       setPdfCliente(clienteAEnviar);
       setNuevoCliente({
@@ -171,9 +174,7 @@ function App() {
         fecha_inicio: formatDate(cliente.fecha_inicio),
         fechaRegistro: formatDate(cliente.fechaRegistro),
       };
-      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.put(`${API_URL}/clientes/${cliente._id}`, clienteAEnviar);
       obtenerClientes();
       setModoEdicion(false);
       setClienteEditando(null);
@@ -187,9 +188,7 @@ function App() {
 
   const eliminarCliente = async (id) => {
     try {
-      await axios.delete(`${API_URL}/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.delete(`${API_URL}/clientes/${id}`);
       obtenerClientes();
       toast.success("Cliente eliminado exitosamente");
     } catch (error) {
@@ -200,9 +199,7 @@ function App() {
 
   const marcarComoSolvente = async (id) => {
     try {
-      await axios.put(`${API_URL}/clientes/solventar/${id}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.put(`${API_URL}/clientes/solventar/${id}`);
       obtenerClientes();
       toast.success("Cliente marcado como solvente");
     } catch (error) {
@@ -212,7 +209,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    setAuthToken(null);
+    setAuthToken('');
     localStorage.removeItem('authToken');
     toast.info("Sesión cerrada");
   };
@@ -235,7 +232,7 @@ function App() {
   );
 
   if (!authToken) {
-    return <Login setAuth={setAuthToken} />;
+    return <Login setAuthToken={setAuthToken} />;
   }
 
   return (

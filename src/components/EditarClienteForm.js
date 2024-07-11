@@ -33,10 +33,28 @@ const EditarClienteForm = ({ open, handleClose, clienteEditando, setClienteEdita
     return Object.values(tempErrors).every(x => x === "");
   };
 
+  const formatDate = (date) => {
+    if (!date) return null;
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      editarCliente(clienteEditando);
+      const clienteAEnviar = {
+        ...clienteEditando,
+        fecha_nacimiento: formatDate(clienteEditando.fecha_nacimiento),
+        fecha_inicio: formatDate(clienteEditando.fecha_inicio),
+      };
+      editarCliente(clienteAEnviar);
     }
   };
 

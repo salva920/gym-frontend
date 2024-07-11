@@ -19,6 +19,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  flex-wrap: wrap;
 }
 
 .logo img {
@@ -40,6 +41,7 @@
   background-color: #fff;
   border-radius: 4px;
   width: 40%;
+  margin-left: 20px;
 }
 
 .searchIcon {
@@ -59,7 +61,12 @@
 @media (max-width: 768px) {
   .toolbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .logo img {
+    width: 80px;
+    height: 80px;
   }
 
   .search {
@@ -69,5 +76,16 @@
 
   .logout {
     align-self: flex-end;
+    margin: 8px 0;
+  }
+}
+
+.main-content {
+  padding-top: 160px; /* Adjust this value to ensure the content doesn't overlap with the fixed menu */
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 180px; /* Adjust this value for mobile view to ensure proper spacing */
   }
 }

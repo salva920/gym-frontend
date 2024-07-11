@@ -33,7 +33,7 @@ function App() {
     tipo_entrenamiento: 'General',
     fecha_inicio: '',
     tipo_membresia: 'Mensual',
-    estado_pago: 'solvente',
+    estado_pago: 'Solvente',
     fechaRegistro: new Date().toISOString().split('T')[0],
     notas: ''
   });
@@ -160,7 +160,7 @@ function App() {
         tipo_entrenamiento: 'General',
         fecha_inicio: '',
         tipo_membresia: 'Mensual',
-        estado_pago: 'solvente',
+        estado_pago: 'Solvente',
         fechaRegistro: new Date().toISOString().split('T')[0],
         notas: ''
       });

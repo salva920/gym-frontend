@@ -5,7 +5,7 @@ import './Dashboard.css';
 const Dashboard = ({ clientes }) => {
   const totalClientes = clientes.length;
   const clientesPendientes = clientes.filter(cliente => cliente.estado_pago === 'Pendiente').length;
-  const clientesPagados = clientes.filter(cliente => cliente.estado_pago === 'Pagado').length;
+  const clientesPagados = clientes.filter(cliente => cliente.estado_pago === 'Solvente').length;
 
   return (
     <Box className="dashboard">

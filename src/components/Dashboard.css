@@ -1,7 +1,7 @@
 .dashboard {
   display: flex;
   justify-content: center;
-  margin: 120px 0 40px; /* Asegúrate de que esto sea suficiente para evitar superposición con el menú */
+  margin: 50px 0 40px; /* Asegúrate de que esto sea suficiente para evitar superposición con el menú */
 }
 
 .card-container-dashboard {
